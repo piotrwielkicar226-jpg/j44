@@ -84,7 +84,8 @@ class MainActivity : Activity() {
         addText(page, "Nie zapisujemy treści wiadomości lokalnie. Hasło jest szyfrowane na telefonie. Jeśli dostawca poczty oferuje hasło aplikacji, użyj go zamiast głównego hasła.", 13, Color.rgb(75, 85, 99))
         addSpace(page, 12)
 
-        val connect = addButton(page, "Połącz i odbierz pocztę") {
+        var connectButton: Button? = null
+        connectButton = addButton(page, "Połącz i odbierz pocztę") {
             val secret = password.text.toString().ifBlank { saved?.password.orEmpty() }
             val config = MailConfig(
                 email = email.text.toString().trim(),
@@ -103,7 +104,7 @@ class MainActivity : Activity() {
                 return@addButton
             }
 
-            connect.isEnabled = false
+            connectButton?.isEnabled = false
             executor.execute {
                 try {
                     val messages = MailService.fetchInbox(config)
@@ -118,7 +119,7 @@ class MainActivity : Activity() {
                     }
                 } catch (error: Exception) {
                     runOnUiThread {
-                        connect.isEnabled = true
+                        connectButton?.isEnabled = true
                         toast(error.localizedMessage ?: "Nie udało się połączyć z serwerem poczty.")
                     }
                 }
